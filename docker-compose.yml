@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: ./backend
+    container_name: pqc_military_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET=super-secret-military-grade-quantum-encryption-key-1287349182374
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: pqc_military_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always

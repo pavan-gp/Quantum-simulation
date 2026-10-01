@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', 'Outfit', sans-serif;
+  }
+  
+  .font-mono-military {
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+  }
+}
+
+/* Custom styles and micro-animations */
+.military-grid {
+  background-image: 
+    radial-gradient(rgba(30, 45, 30, 0.4) 1px, transparent 0),
+    radial-gradient(rgba(30, 45, 30, 0.4) 1px, transparent 0);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+.glow-gold {
+  box-shadow: 0 0 15px rgba(197, 160, 89, 0.2);
+}
+
+.glow-green {
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
+}
+
+.glass-panel {
+  background: rgba(14, 20, 14, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(30, 45, 30, 0.6);
+}
+
+/* Scanline and CRT effects */
+.crt-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.crt-effect::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.scanline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: rgba(74, 222, 128, 0.1);
+  animation: scanline 6s linear infinite;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Custom Leaflet overrides */
+.leaflet-container {
+  background: #050705 !important;
+  font-family: inherit;
+}
+
+.leaflet-bar {
+  border: 1px solid rgba(197, 160, 89, 0.5) !important;
+  background: #0E140E !important;
+}
+
+.leaflet-bar a {
+  background: #0E140E !important;
+  color: #C5A059 !important;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.2) !important;
+}
+
+.leaflet-bar a:hover {
+  background: #1E2D1E !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050705;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E2D1E;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2A4D25;
+}
