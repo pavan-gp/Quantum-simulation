@@ -1,6 +1,6 @@
 # Post-Quantum Secure Military Communication Portal (SHIELD)
 
-A defense-grade secure communication portal establishing an encrypted channel between **Army Node A (Country 1)** and **Army Node B (Country 2)**. The system implements a hybrid post-quantum cryptographic (PQC) and classical pipeline, incorporating AI/ML threat detection filters and immutable distributed ledger audit logging.
+A defense-grade secure communication portal establishing an encrypted channel between The system implements a hybrid post-quantum cryptographic (PQC) and classical pipeline, incorporating AI/ML threat detection filters and immutable distributed ledger audit logging.
 
 ---
 
