@@ -72,9 +72,4 @@ docker-compose up --build
 - **React Web Portal**: Access [http://localhost:3000](http://localhost:3000)
 - **FastAPI REST API Docs**: Access [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### Sandbox Login Accounts
-Quick access logins pre-loaded on SQLite database boot:
-- **Sender Node A (Country 1)**: `sender.countrya@mil.gov` // Passcode: `SecureA123!`
-- **Receiver Node B (Country 2)**: `receiver.countryb@mil.gov` // Passcode: `SecureB123!`
-- **System Admin**: `admin.shield@mil.gov` // Passcode: `AdminShield2026!`
-- *MFA OTP pin codes: Enter `000000` or `123456`.*
+
