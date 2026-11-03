@@ -316,7 +316,7 @@ export default function QuantumVisuals() {
               </div>
 
               <p className="text-gray-400 leading-relaxed mt-2">
-                <b>Grover's Quantum Search</b> runs database queries in $O(\sqrt{N})$ compared to classical $O(N)$ searches. 
+                <b>Grover's Quantum Search</b> runs database queries in O(&radic;N) compared to classical O(N) searches. 
                 Our secure pipeline counters Grover attacks by doubling symmetric cipher key bit-lengths (AES-256), preserving security against quantum brute-force searches.
               </p>
             </div>
@@ -332,8 +332,8 @@ export default function QuantumVisuals() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                 <div className="flex flex-col gap-3">
                   <div className="text-xs text-gray-400 leading-relaxed">
-                    Shor's algorithm factors integers in polynomial time $O(\log N)$, threatening classical RSA key exchanges. 
-                    Shor finds the repeating cycle (period $r$) of:
+                    Shor's algorithm factors integers in polynomial time O((log N)&sup3;), threatening classical RSA key exchanges. 
+                    Shor finds the repeating cycle (period r) of:
                   </div>
                   <div className="bg-black/60 p-3 rounded border border-army-border text-center text-army-gold font-bold font-mono">
                     f(x) = a^x mod N
@@ -375,20 +375,20 @@ export default function QuantumVisuals() {
                       Quantum Math Period Solver:
                     </div>
                     <div>
-                      1. Check $r$ is even: <b>r = 4 (Even, valid)</b>
+                      1. Check r is even: <b>r = 4 (Even, valid)</b>
                     </div>
                     <div>
-                      2. Solve $a^{r/2} \pm 1 \pmod N$:
-                      <div className="pl-4 mt-1 text-gray-400">
-                        $7^{4/2} - 1 = 49 - 1 = 48$ <br />
-                        $7^{4/2} + 1 = 49 + 1 = 50$
+                      2. Solve a^(r/2) &plusmn; 1 (mod N):
+                      <div className="pl-4 mt-1 text-gray-400 font-mono">
+                        7^(4/2) - 1 = 49 - 1 = 48 <br />
+                        7^(4/2) + 1 = 49 + 1 = 50
                       </div>
                     </div>
                     <div>
                       3. Compute Greatest Common Divisors:
-                      <div className="pl-4 mt-1 text-army-brightGreen font-bold">
-                        $\text{gcd}(48, 15) = 3$ <br />
-                        $\text{gcd}(50, 15) = 5$
+                      <div className="pl-4 mt-1 text-army-brightGreen font-bold font-mono">
+                        gcd(48, 15) = 3 <br />
+                        gcd(50, 15) = 5
                       </div>
                     </div>
                     <div className="border-t border-army-border/40 pt-2 text-[9px] text-gray-500 font-bold">
@@ -397,7 +397,7 @@ export default function QuantumVisuals() {
                   </div>
                   
                   <div className="bg-army-threatRed/10 border border-red-900/40 p-3 rounded text-[10px] text-red-400">
-                    <b>PQC Mitigation</b>: crystals-Kyber relies on the hardness of modular Lattice problems (Learning with Errors), which Shor's algorithm cannot solve in polynomial time.
+                    <b>PQC Mitigation</b>: Crystals-Kyber relies on the hardness of modular Lattice problems (Learning with Errors), which Shor's algorithm cannot solve in polynomial time.
                   </div>
                 </div>
               </div>

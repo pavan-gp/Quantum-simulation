@@ -1,25 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Shield, Lock, Cpu, Globe2, ChevronRight, Activity, Database, CheckCircle2 } from 'lucide-react'
+import { 
+  Shield, Cpu, Globe2, ChevronRight, 
+  ShieldAlert, KeyRound
+} from 'lucide-react'
 import ParticleBackground from '../components/ParticleBackground'
 import WorldMap from '../components/WorldMap'
 import { SecurityContext } from '../App'
 
 export default function LandingPage() {
-  const { user } = useContext(SecurityContext)
+  const { user, setUser } = useContext(SecurityContext)
   const navigate = useNavigate()
   const [activeTransmissions, setActiveTransmissions] = useState([])
 
-  // Redirect if logged in already
-  useEffect(() => {
-    if (user) {
-      if (user.role === 'admin') navigate('/admin')
-      else if (user.country === 'Country A') navigate('/sender')
-      else navigate('/receiver')
-    }
-  }, [user, navigate])
-
-  // Mock a dynamic transmission line pulse on the world map occasionally
+  // Mock dynamic transmission line pulses on the world map
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveTransmissions([{ status: 'delivered' }])
@@ -31,88 +25,108 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="relative min-h-[calc(100vh-80px)] flex flex-col justify-center py-6 font-mono-military">
+    <div className="relative min-h-[calc(100vh-120px)] flex flex-col justify-center py-4 font-mono-military">
       {/* Dynamic Animated Particles background */}
       <ParticleBackground />
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 relative">
-        {/* LEFT COLUMN: INTRO & BADGES */}
-        <div className="lg:col-span-6 flex flex-col gap-6">
-          <div className="flex items-center gap-2 bg-army-green/20 border border-army-green text-army-brightGreen text-[10px] py-1 px-3 rounded-full w-fit">
-            <span className="w-1.5 h-1.5 rounded-full bg-army-brightGreen animate-ping"></span>
-            DEFENSE-GRADE QUANTUM COMMAND SYSTEM ACTIVE
+      {/* HERO SECTION */}
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 relative mb-10">
+        
+        {/* LEFT COLUMN: HERO INTRO */}
+        <div className="lg:col-span-6 flex flex-col gap-5">
+          <div className="flex items-center gap-2 bg-army-green/30 border border-army-brightGreen/60 text-army-brightGreen text-[11px] py-1.5 px-3.5 rounded-full w-fit backdrop-blur-sm glow-green">
+            <span className="w-2 h-2 rounded-full bg-army-brightGreen animate-ping"></span>
+            <span>POST-QUANTUM HYBRID DEFENSE SHIELD ACTIVE</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-sans">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-none font-sans">
             POST-QUANTUM <br />
-            <span className="text-army-gold">SECURE COMMAND PORTAL</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-army-gold via-yellow-200 to-army-goldLight">
+              MILITARY PORTAL
+            </span>
           </h1>
 
-          <p className="text-xs text-gray-400 leading-relaxed font-sans max-w-xl">
-            SHIELD is a cross-country military communication pipeline. Utilizing modular 
-            LWE-based Crystals-Kyber encryption, Crystals-Dilithium digital signatures, 
-            and quantum-simulated BB84 key distribution protocols to counter threat vectors, 
-            including Grover-brute force and Shor-factoring quantum algorithms.
+          <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-sans max-w-xl">
+            A defense-grade tactical communication system between <strong>Army Node A (Country 1)</strong> and <strong>Army Node B (Country 2)</strong>. 
+            Engineered with lattice-based <strong>Crystals-Kyber-768 KEM</strong>, <strong>Crystals-Dilithium-IV signatures</strong>, 
+            software-simulated <strong>BB84 Quantum Key Distribution</strong>, and immutable <strong>blockchain audit logging</strong>.
           </p>
 
-          {/* QUICK LINKS / CTAs */}
-          <div className="flex flex-wrap gap-4 mt-2">
+          {/* PRIMARY CTAS */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <Link 
               to="/login" 
-              className="bg-army-green text-white border border-army-brightGreen/50 px-6 py-3 rounded text-xs font-bold hover:bg-green-900 transition-all flex items-center gap-2 glow-green"
+              className="bg-army-green text-white border border-army-brightGreen/70 px-6 py-3 rounded text-xs font-bold hover:bg-green-800 transition-all flex items-center gap-2 glow-green shadow-lg"
               id="portal-login-btn"
             >
-              ACCESS SECURE MILITARY PORTAL <ChevronRight className="w-4 h-4" />
+              <KeyRound className="w-4 h-4 text-army-gold" />
+              <span>ACCESS SECURE PORTAL</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+
+            <Link 
+              to="/quantum" 
+              className="bg-black/60 hover:bg-army-panel text-army-gold border border-army-gold/40 px-5 py-3 rounded text-xs font-bold transition-all flex items-center gap-2 glow-gold"
+            >
+              <Cpu className="w-4 h-4 text-purple-400" />
+              <span>EXPLORE QUANTUM LAB</span>
+            </Link>
+
+            <Link 
+              to="/attacks" 
+              className="bg-black/60 hover:bg-army-panel text-red-400 border border-red-500/40 px-5 py-3 rounded text-xs font-bold transition-all flex items-center gap-2 glow-red"
+            >
+              <ShieldAlert className="w-4 h-4 text-red-500" />
+              <span>ATTACK SIMULATOR</span>
             </Link>
           </div>
 
-          {/* SECURE TRUST BADGES */}
-          <div className="border-t border-army-border/60 pt-6 mt-4">
-            <div className="text-[10px] text-gray-500 mb-3 tracking-widest uppercase font-bold">
-              SYSTEM SECURITY CREDENTIALS
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { name: "PQC AES-256", desc: "Modular LWE Sealed" },
-                { name: "BB84 QKD SIM", desc: "Software Photons" },
-                { name: "BLOCKCHAIN AUDIT", desc: "Tamper Proof Ledger" },
-                { name: "WAF PROTECTED", desc: "AI Threat Filter" }
-              ].map((badge, idx) => (
-                <div key={idx} className="bg-army-panel/60 border border-army-border p-2 rounded flex flex-col gap-0.5">
-                  <span className="text-army-gold text-[10px] font-bold">{badge.name}</span>
-                  <span className="text-gray-500 text-[8px]">{badge.desc}</span>
-                </div>
-              ))}
-            </div>
+          {/* SYSTEM BADGES */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+            {[
+              { name: "Crystals-Kyber", desc: "Module-LWE KEM", color: "border-green-500/40 text-army-brightGreen" },
+              { name: "Crystals-Dilithium", desc: "Quantum Signatures", color: "border-yellow-500/40 text-army-gold" },
+              { name: "BB84 QKD Protocol", desc: "QBER Error Detection", color: "border-purple-500/40 text-purple-300" },
+              { name: "Proof-of-Work Ledger", desc: "Zero-Tamper Audit", color: "border-blue-500/40 text-blue-300" }
+            ].map((badge, idx) => (
+              <div key={idx} className={`bg-army-panel/80 border p-2.5 rounded flex flex-col gap-0.5 backdrop-blur-sm ${badge.color}`}>
+                <span className="text-[11px] font-bold">{badge.name}</span>
+                <span className="text-gray-400 text-[9px]">{badge.desc}</span>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* RIGHT COLUMN: WORLD MAP HUB */}
         <div className="lg:col-span-6 flex flex-col gap-4">
-          <div className="bg-army-panel border border-army-border rounded p-4 flex flex-col gap-4">
+          <div className="glass-panel border border-army-border rounded p-4 flex flex-col gap-3 shadow-2xl">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-gray-300 font-bold flex items-center gap-1.5">
-                <Globe2 className="w-4 h-4 text-army-gold" /> LIVE MILITARY TRANSMISSION LINK
+              <span className="text-gray-200 font-bold flex items-center gap-2">
+                <Globe2 className="w-4 h-4 text-army-gold animate-spin-slow" /> 
+                <span>TACTICAL CROSS-BORDER NODE TELEMETRY</span>
               </span>
-              <span className="text-gray-500 text-[10px]">PING INTERVAL: 3.2ms</span>
+              <span className="text-army-brightGreen text-[10px] flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-army-brightGreen animate-pulse"></span>
+                LIVE SATELLITE
+              </span>
             </div>
 
             {/* Tactical satellite map widget */}
             <WorldMap transmissions={activeTransmissions} />
 
-            {/* Map Statistics bar */}
-            <div className="grid grid-cols-3 gap-2 bg-black/60 p-3 rounded border border-army-border text-center text-[10px]">
+            {/* Map Telemetry status */}
+            <div className="grid grid-cols-3 gap-2 bg-black/70 p-3 rounded border border-army-border text-center text-[10px]">
               <div>
-                <div className="text-gray-500 font-bold">NODE A GRID</div>
-                <div className="text-army-brightGreen font-bold mt-0.5">SENDER</div>
+                <div className="text-gray-400 font-bold">NODE A (USA)</div>
+                <div className="text-army-brightGreen font-bold mt-0.5">SENDER ACTIVE</div>
               </div>
               <div>
-                <div className="text-gray-500 font-bold">NODE B GRID</div>
-                <div className="text-army-brightGreen font-bold mt-0.5">RECEIVER</div>
+                <div className="text-gray-400 font-bold">NODE B (UK)</div>
+                <div className="text-army-brightGreen font-bold mt-0.5">RECEIVER READY</div>
               </div>
               <div>
-                <div className="text-gray-500 font-bold">LINK INTEGRITY</div>
-                <div className="text-army-gold font-bold mt-0.5">100% IMMUTABLE</div>
+                <div className="text-gray-400 font-bold">ENCRYPTION STATE</div>
+                <div className="text-army-gold font-bold mt-0.5">HYBRID QUANTUM-SAFE</div>
               </div>
             </div>
           </div>

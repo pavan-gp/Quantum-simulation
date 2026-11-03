@@ -60,19 +60,65 @@ major-project/
 
 ---
 
-## ⚡ Deployment & Running
+## ⚡ Quick Start & Running Commands
 
-### Run inside Docker (Recommended)
-Launch the container nodes on Apple Silicon / macOS:
+### Option 1: 1-Command Local Runner (Fastest)
 
+Run both the FastAPI backend and React frontend concurrently with automatic environment setup:
+
+```bash
+./run.sh
+```
+
+- **React Web Portal**: [http://localhost:3000](http://localhost:3000)
+- **FastAPI REST API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### Option 2: Running Services Individually
+
+#### Terminal 1 — Backend (FastAPI):
+```bash
+cd backend
+# Activate virtual environment
+source venv/bin/activate
+# Start Uvicorn ASGI server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+#### Terminal 2 — Frontend (React Vite):
+```bash
+cd frontend
+# Start Vite development server
+npm run dev
+```
+
+---
+
+### Option 3: Docker Compose
 ```bash
 docker-compose up --build
 ```
 
-- **React Web Portal**: Access [http://localhost:3000](http://localhost:3000)
-- **FastAPI REST API Docs**: Access [http://localhost:8000/docs](http://localhost:8000/docs)
+---
 
+## 🧪 Validation & Test Suite
 
+Run the full cryptographic parity test suite and production build validator:
 
-## Contribution
-Documentation update.
+```bash
+./test.sh
+```
+
+---
+
+## 🔑 Pre-Seeded Military Credentials
+
+| Role / Node | Officer Name | Email | Password |
+|---|---|---|---|
+| **Node A Commander (Sender)** | Col. Alex Mercer | `sender.countrya@mil.gov` | `SecureA123!` |
+| **Node B General (Receiver)** | Gen. Beatrix Vance | `receiver.countryb@mil.gov` | `SecureB123!` |
+| **SHIELD HQ (Admin)** | Director Vance Croft | `admin.shield@mil.gov` | `AdminShield2026!` |
+
+> [!TIP]
+> The login screen features **1-Click Quick Fill & Solve** buttons to populate credentials, auto-solve anti-bot challenges, and auto-populate OTP codes for rapid testing.

@@ -1,0 +1,12 @@
+{
+  "name": "shield-pqc-military-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Post-Quantum Secure Military Communication Portal (SHIELD)",
+  "scripts": {
+    "start": "./run.sh",
+    "dev": "./run.sh",
+    "build": "cd frontend && npm run build",
+    "test": "./test.sh"
+  }
+}

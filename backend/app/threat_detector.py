@@ -64,6 +64,75 @@ class ThreatDetector:
             if re.search(pattern, text, re.IGNORECASE):
                 threats_detected.append("Classified Military Leak / Unauthorized Operations Data")
                 severity = "CRITICAL"
+
+        # 4. Adversarial Tunneling & Reverse Proxy Links (Cloudflare Tunnels, Ngrok, Localtunnel, etc.)
+        # Frequently used to bypass military firewalls and route to phishing/malware command-and-control
+        tunnel_patterns = [
+            r"https?://[^\s/]*trycloudflare\.com",
+            r"https?://[^\s/]*ngrok(-free)?\.(app|io)",
+            r"https?://[^\s/]*loca\.lt",
+            r"https?://[^\s/]*localtunnel\.me",
+            r"https?://[^\s/]*(serveo\.net|telebit\.cloud|pagekite\.me|pinggy\.io|bore\.pub|portmap\.io)",
+            r"https?://[^\s/]*(webhook\.site|pipedream\.net)"
+        ]
+        for pattern in tunnel_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                threats_detected.append("Adversarial C2 Tunnel / Phishing Proxy Link Detected (trycloudflare/ngrok/tunnel)")
+                severity = "CRITICAL"
+
+        # 5. Direct IP Command-and-Control (C2) Callbacks & Raw Socket URLs
+        raw_ip_url = r"https?://(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?(?:/[^\s]*)?"
+        if re.search(raw_ip_url, text):
+            threats_detected.append("Direct IP-Based C2 Command-and-Control Link Detected")
+            severity = "HIGH"
+
+        # 6. Malicious Executable / Script Payload URLs
+        payload_url_pattern = r"https?://[^\s]+\.(exe|sh|bat|ps1|vbs|scr|bin|apk|dll|so|cmd|msi|iso|jar|hta)(\?[^\s]*)?"
+        if re.search(payload_url_pattern, text, re.IGNORECASE):
+            threats_detected.append("Remote Malicious Payload Executable Link Detected (.exe/.sh/.dll)")
+            severity = "CRITICAL"
+
+        # 7. Phishing / Darknet / Bulletproof High-Risk TLDs & Embedded Credentials
+        phishing_patterns = [
+            r"https?://[^\s/]+\.(onion|ru|su|top|xyz|buzz|fit|tk|ml|ga|cf|gq)(?:/|\b|$)",
+            r"https?://[^:\s]+:[^@\s]+@",  # Embedded user:pass credentials in URL
+            r"https?://[^\s/]*(?:login|signin|verify|bank|auth|secure-update|account-claim)[^\s/]*\.(site|online|club|info|vip|live|icu|pw|bid|click|link)"
+        ]
+        for pattern in phishing_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                threats_detected.append("Fraudulent Phishing / Credential Harvester Link Detected")
+                severity = "HIGH"
+
+        # 8. Malicious Paste / Anonymous Drop Services
+        paste_patterns = [
+            r"https?://[^\s/]*(pastebin\.com/raw/|hastebin\.com/raw/|ghostbin\.com|rentry\.co|anonfiles\.com)"
+        ]
+        for pattern in paste_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                threats_detected.append("Untrusted Anonymous File/Paste Drop Link Detected")
+                severity = "HIGH"
+
+        # 9. Denial of Service (DoS / DDoS) Flood Scripts & Process Exhaustion Exploits
+        dos_patterns = [
+            (r"(?:ThreadPoolExecutor|ProcessPoolExecutor|threading\.Thread|asyncio\.gather)\b.*(?:requests\.(?:get|post)|urllib|http\.client|aiohttp)", 
+             "Denial of Service (DoS) HTTP Flood Attack Script (Concurrent Request Storm)", "CRITICAL"),
+            (r"TOTAL_REQUESTS\s*=\s*\d+.*(?:ThreadPoolExecutor|requests\.get|threading)", 
+             "Automated DoS / High-Volume Stress Attack Script", "CRITICAL"),
+            (r"socket\.(?:AF_INET|SOCK_STREAM|SOCK_DGRAM).*while\s+True:.*send(?:to)?\(", 
+             "Socket-Level Denial of Service (DoS) Flood Loop (SYN/UDP/Slowloris)", "CRITICAL"),
+            (r"from\s+scapy\b.*(?:sendp|sr1|flood|RandIP|IP\()/s", 
+             "Scapy Low-Level Packet Crafting / Network Flooder", "CRITICAL"),
+            (r":\(\)\s*\{\s*:\|:&\s*\};:|while\s+True:\s*(?:os\.fork|subprocess|fork\()", 
+             "Process Exhaustion Fork-Bomb Attack Detected", "CRITICAL"),
+            (r"\b(?:slowloris|LOIC|HOIC|goldeneye|hping3|synflood|udp_flood|http_flood)\b", 
+             "Known Denial of Service (DoS/DDoS) Weapon Signature Detected", "CRITICAL"),
+            (r"bash\s+-i\s*>&?\s*/dev/tcp/\d", "Reverse Shell Command (Bash /dev/tcp Pipe)", "CRITICAL"),
+            (r"socket\.socket\(.*\).*(?:os\.dup2|subprocess\.call|pty\.spawn)", "Interactive Reverse Shell Payload", "CRITICAL")
+        ]
+        for pattern, desc, sev in dos_patterns:
+            if re.search(pattern, text, re.IGNORECASE | re.DOTALL):
+                threats_detected.append(desc)
+                severity = sev
                 
         is_safe = len(threats_detected) == 0
         return {
@@ -173,6 +242,43 @@ class ThreatDetector:
             if content_entropy > 7.8:
                 threats_detected.append("Zero-Day Packed Malware Anomaly Detected (High Entropy Binary)")
                 severity = "HIGH"
+
+        # 4. Deep Inspection of Text, Script, & Code Files (DoS/DDoS, Reverse Shells, Exploits)
+        try:
+            text_sample = file_bytes.decode('utf-8', errors='ignore')
+            if text_sample and len(text_sample.strip()) > 5:
+                # Run DoS, reverse shell, and script inspection
+                dos_patterns = [
+                    (r"(?:ThreadPoolExecutor|ProcessPoolExecutor|threading\.Thread|asyncio\.gather)\b.*(?:requests\.(?:get|post)|urllib|http\.client|aiohttp)", 
+                     "Denial of Service (DoS) HTTP Flood Attack Script (Concurrent Request Storm)", "CRITICAL"),
+                    (r"TOTAL_REQUESTS\s*=\s*\d+.*(?:ThreadPoolExecutor|requests\.get|threading)", 
+                     "Automated DoS / High-Volume Stress Attack Script", "CRITICAL"),
+                    (r"socket\.(?:AF_INET|SOCK_STREAM|SOCK_DGRAM).*while\s+True:.*send(?:to)?\(", 
+                     "Socket-Level Denial of Service (DoS) Flood Loop (SYN/UDP/Slowloris)", "CRITICAL"),
+                    (r"from\s+scapy\b.*(?:sendp|sr1|flood|RandIP|IP\()/s", 
+                     "Scapy Low-Level Packet Crafting / Network Flooder", "CRITICAL"),
+                    (r":\(\)\s*\{\s*:\|:&\s*\};:|while\s+True:\s*(?:os\.fork|subprocess|fork\()", 
+                     "Process Exhaustion Fork-Bomb Attack Detected", "CRITICAL"),
+                    (r"\b(?:slowloris|LOIC|HOIC|goldeneye|hping3|synflood|udp_flood|http_flood)\b", 
+                     "Known Denial of Service (DoS/DDoS) Weapon Signature Detected", "CRITICAL"),
+                    (r"bash\s+-i\s*>&?\s*/dev/tcp/\d", "Reverse Shell Command (Bash /dev/tcp Pipe)", "CRITICAL"),
+                    (r"socket\.socket\(.*\).*(?:os\.dup2|subprocess\.call|pty\.spawn)", "Interactive Reverse Shell Payload", "CRITICAL")
+                ]
+                for pattern, desc, sev in dos_patterns:
+                    if re.search(pattern, text_sample, re.IGNORECASE | re.DOTALL):
+                        threats_detected.append(desc)
+                        severity = sev
+
+                # Run NLP threat check on the text as well (catches SQLi, XSS, C2 URLs, leaks)
+                nlp_res = ThreatDetector.scan_nlp_text(text_sample)
+                if not nlp_res["is_safe"]:
+                    for t in nlp_res["threats"]:
+                        if t not in threats_detected:
+                            threats_detected.append(t)
+                    if nlp_res["severity"] == "CRITICAL" or severity == "LOW":
+                        severity = nlp_res["severity"]
+        except Exception:
+            pass
                 
         is_safe = len(threats_detected) == 0
         return {

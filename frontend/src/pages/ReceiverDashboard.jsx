@@ -8,7 +8,7 @@ export default function ReceiverDashboard() {
   const { user } = useContext(SecurityContext)
   const [messages, setMessages] = useState([])
   const [activeMsg, setActiveMsg] = useState(null)
-  
+
   // Decrypted outputs
   const [decryptedText, setDecryptedText] = useState('')
   const [decryptedImage, setDecryptedImage] = useState('')
@@ -50,8 +50,8 @@ export default function ReceiverDashboard() {
     try {
       const res = await axios.get('/api/messages/history')
       // Show messages sent to this user
-      const filtered = res.data.filter(m => 
-        m.receiver_name.includes(user.full_name.substring(0, 5)) || 
+      const filtered = res.data.filter(m =>
+        m.receiver_name.includes(user.full_name.substring(0, 5)) ||
         user.role === 'admin'
       )
       setMessages(filtered)
@@ -109,7 +109,7 @@ export default function ReceiverDashboard() {
 
   return (
     <div className="font-mono-military flex flex-col gap-6 text-xs relative z-10">
-      
+
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-army-panel border border-army-border p-4 rounded">
         <div>
@@ -122,7 +122,7 @@ export default function ReceiverDashboard() {
           </p>
         </div>
 
-        <button 
+        <button
           onClick={fetchMessages}
           className="bg-black/60 hover:bg-army-panel text-army-gold border border-army-gold/40 px-4 py-2 rounded flex items-center gap-2 font-bold tracking-widest text-[10px]"
         >
@@ -131,7 +131,7 @@ export default function ReceiverDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* LEFT COLUMN: INCOMING SECURE LIST */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="glass-panel p-4 rounded border border-army-border flex flex-col min-h-[400px]">
@@ -146,23 +146,21 @@ export default function ReceiverDashboard() {
                 messages.map((m) => {
                   const isBlocked = m.status === 'blocked';
                   const isDestructed = destructedMsgs[m.id];
-                  
+
                   return (
                     <button
                       key={m.id}
                       onClick={() => handleReadMessage(m)}
-                      className={`text-left p-3 rounded border transition-all flex flex-col gap-2 ${
-                        activeMsg?.id === m.id ? 'bg-army-green/20 border-army-brightGreen glow-green' : 'bg-black/40 border-army-border hover:bg-army-panel/60'
-                      }`}
+                      className={`text-left p-3 rounded border transition-all flex flex-col gap-2 ${activeMsg?.id === m.id ? 'bg-army-green/20 border-army-brightGreen glow-green' : 'bg-black/40 border-army-border hover:bg-army-panel/60'
+                        }`}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2 font-bold text-gray-300">
                           <Lock className="w-3.5 h-3.5 text-army-gold" />
                           <span>FROM: {m.sender_name}</span>
                         </div>
-                        <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold border ${
-                          isBlocked ? 'bg-red-950/20 border-red-500 text-red-400' : 'bg-army-green/20 border-army-brightGreen text-army-brightGreen'
-                        }`}>
+                        <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold border ${isBlocked ? 'bg-red-950/20 border-red-500 text-red-400' : 'bg-army-green/20 border-army-brightGreen text-army-brightGreen'
+                          }`}>
                           {isBlocked ? 'BLOCKED' : 'DELIVERED'}
                         </span>
                       </div>
@@ -177,8 +175,8 @@ export default function ReceiverDashboard() {
                         <div className="text-[8px] text-army-gold flex items-center gap-1 mt-1 font-bold">
                           <Clock className="w-3 h-3 text-army-gold" />
                           <span>
-                            {isDestructed ? 'SHREDDED & DESTRUCTED' : 
-                             countdown[m.id] !== undefined ? `SELF-DESTRUCT TIMING: ${countdown[m.id]}s` : `TIMER VALUE: ${m.self_destruct}s`}
+                            {isDestructed ? 'SHREDDED & DESTRUCTED' :
+                              countdown[m.id] !== undefined ? `SELF-DESTRUCT TIMING: ${countdown[m.id]}s` : `TIMER VALUE: ${m.self_destruct}s`}
                           </span>
                         </div>
                       )}
@@ -192,7 +190,7 @@ export default function ReceiverDashboard() {
 
         {/* RIGHT COLUMN: DECRYPT PANEL & DIAGNOSTICS */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          
+
           {/* DECRYPTION PANEL */}
           <div className="glass-panel p-5 rounded border border-army-border flex-1 flex flex-col min-h-[300px]">
             <h3 className="text-army-gold font-bold mb-4 border-b border-army-border pb-1">
@@ -212,7 +210,7 @@ export default function ReceiverDashboard() {
               </div>
             ) : (
               <div className="flex-1 flex flex-col gap-4">
-                
+
                 {/* Safe clearance seal */}
                 {activeMsg.status !== 'blocked' && (
                   <div className="bg-army-green/20 border border-army-brightGreen p-3 rounded flex items-center justify-between text-army-brightGreen font-bold">
@@ -242,9 +240,9 @@ export default function ReceiverDashboard() {
                   )}
                   {decryptedImage ? (
                     <div className="flex flex-col items-center gap-2 max-w-full overflow-hidden p-2 border border-army-border/40 bg-black/20 rounded">
-                      <img 
-                        src={decryptedImage} 
-                        alt="Decrypted Military Intel" 
+                      <img
+                        src={decryptedImage}
+                        alt="Decrypted Military Intel"
                         className="max-h-[180px] max-w-full object-contain rounded border border-army-gold/30"
                       />
                       <span className="text-[9px] text-army-gold">{decryptedText}</span>
@@ -258,9 +256,8 @@ export default function ReceiverDashboard() {
                 {activeMsg.file_name && activeMsg.status !== 'blocked' && !isDecrypting && decryptedText && (
                   <a
                     href={`/api/messages/${activeMsg.id}/download`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full bg-army-gold hover:bg-army-goldLight text-black text-center font-bold py-2.5 rounded tracking-widest text-[10px] flex items-center justify-center gap-1.5 glow-gold"
+                    download={activeMsg.file_name || true}
+                    className="w-full bg-army-gold hover:bg-army-goldLight text-black text-center font-bold py-2.5 rounded tracking-widest text-[10px] flex items-center justify-center gap-1.5 glow-gold cursor-pointer transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" /> DOWNLOAD DECIPHERED MILITARY DOCUMENT
                   </a>

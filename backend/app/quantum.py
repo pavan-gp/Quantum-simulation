@@ -76,8 +76,9 @@ class QuantumSimulator:
         alice_sifted = [alice_bits[i] for i in matching_indices]
         bob_sifted = [bob_bits[i] for i in matching_indices]
         
-        # Calculate QBER (Quantum Bit Error Rate) on a 20% sample
-        sample_size = max(1, int(len(matching_indices) * 0.2))
+        # Calculate QBER (Quantum Bit Error Rate) on a 50% sample (standard QKD parameter estimation)
+        sample_size = max(10, int(len(matching_indices) * 0.5))
+        sample_size = min(sample_size, len(matching_indices))
         sample_indices = random.sample(matching_indices, sample_size) if len(matching_indices) > 0 else []
         
         errors = sum(1 for i in sample_indices if alice_bits[i] != bob_bits[i])

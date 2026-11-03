@@ -131,7 +131,7 @@ export default function ThreatReport() {
             <div className="bg-army-panel border border-army-border p-3.5 rounded text-[10px] text-gray-500">
               <b>Tactical Sync Note</b>: WAF modules have shared this telemetry configuration with secondary routers. All connections originating from coordinate grid segment blocked for 24 hours.
             </div>
-          </div>
+          </div>x
         </div>
 
       </div>

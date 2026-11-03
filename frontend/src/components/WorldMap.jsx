@@ -210,9 +210,9 @@ export default function WorldMap({ transmissions = [], activeAttack = null, send
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           maxZoom={18}
         />
-        {/* Sleek Dark Labels Overlay for tactical country/city boundary visibility */}
+        {/* Sleek Esri Tactical Boundaries and Reference Labels */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png"
+          url="https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
           maxZoom={18}
         />
 

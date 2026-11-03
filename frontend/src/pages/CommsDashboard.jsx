@@ -85,11 +85,19 @@ export default function CommsDashboard() {
       const res = await axios.get('/api/messages/history')
       
       // Filter out messages SENT by this user
-      const sent = res.data.filter(h => h.sender_name.includes(user.full_name.substring(0, 5)))
+      const sent = res.data.filter(h => 
+        h.sender_id === user.id || 
+        (h.sender_name && user.full_name && h.sender_name.toLowerCase().includes(user.full_name.toLowerCase().substring(0, 4))) ||
+        user.role === 'admin'
+      )
       setSentHistory(sent)
 
       // Filter out messages RECEIVED by this user
-      const received = res.data.filter(m => m.receiver_name.includes(user.full_name.substring(0, 5)))
+      const received = res.data.filter(m => 
+        m.receiver_id === user.id || 
+        (m.receiver_name && user.full_name && m.receiver_name.toLowerCase().includes(user.full_name.toLowerCase().substring(0, 4))) ||
+        user.role === 'admin'
+      )
       setMessages(received)
     } catch (err) {
       console.error(err)
@@ -133,7 +141,10 @@ export default function CommsDashboard() {
       
       if (res.data.status === 'blocked') {
         setBlockedReport(res.data)
+        setPipelineStatus('BLOCKED')
+        setActiveTransmissions([{ status: 'blocked' }])
       } else {
+        setPipelineStatus('DELIVERED')
         // Clear inputs on success
         setTextVal('')
         setSelectedFile(null)
@@ -563,9 +574,8 @@ export default function CommsDashboard() {
                 {activeMsg.file_name && activeMsg.status !== 'blocked' && !isDecrypting && decryptedText && (
                   <a
                     href={`/api/messages/${activeMsg.id}/download`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full bg-army-gold hover:bg-army-goldLight text-black text-center font-bold py-2 rounded tracking-widest text-[9px] flex items-center justify-center gap-1.5 glow-gold"
+                    download={activeMsg.file_name || true}
+                    className="w-full bg-army-gold hover:bg-army-goldLight text-black text-center font-bold py-2 rounded tracking-widest text-[9px] flex items-center justify-center gap-1.5 glow-gold cursor-pointer transition-colors"
                   >
                     <Download className="w-3 h-3" /> DOWNLOAD DECIPHERED MILITARY DOCUMENT
                   </a>

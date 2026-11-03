@@ -9,16 +9,16 @@ from cryptography.hazmat.backends import default_backend
 class CrystalsKyberSim:
     """
     High-fidelity mathematical simulation of Crystals-Kyber Key Encapsulation.
-    Implements a simplified Module-LWE (Learning With Errors) key exchange.
+    Implements Module-LWE (Learning With Errors) key exchange with bitwise error-reconciliation.
     """
     @staticmethod
     def generate_keypair() -> tuple[dict, dict]:
-        # Choose a modular prime (Kyber uses q = 3329)
+        # Choose Kyber prime (q = 3329)
         q = 3329
-        # Simulate secret s (small coefficients)
-        secret_s = [os.urandom(1)[0] % 5 - 2 for _ in range(4)]
+        # Simulate secret s (small coefficients in {-1, 0, 1})
+        secret_s = [os.urandom(1)[0] % 3 - 1 for _ in range(4)]
         # Simulate public matrix A
-        matrix_A = [[os.urandom(1)[0] % 100 for _ in range(4)] for _ in range(4)]
+        matrix_A = [[int.from_bytes(os.urandom(2), 'little') % q for _ in range(4)] for _ in range(4)]
         # Simulate error vector e
         error_e = [os.urandom(1)[0] % 3 - 1 for _ in range(4)]
         
@@ -44,19 +44,21 @@ class CrystalsKyberSim:
     @staticmethod
     def encapsulate(public_key: dict) -> tuple[dict, bytes]:
         """
-        Generates a cipher text (encapsulation) and a shared symmetric key.
+        Generates a ciphertext (encapsulation) and a shared symmetric key.
         """
         q = public_key["q"]
+        half_q = round(q / 2) # 1664
         matrix_A = public_key["matrix_A"]
         t = public_key["t"]
         
-        # Generate random message m (the key source)
-        msg_m = os.urandom(32)
+        # Generate random 32-bit message seed m (4 bytes = 32 bits)
+        msg_bytes = os.urandom(4)
+        msg_bits = [(msg_bytes[i // 8] >> (i % 8)) & 1 for i in range(32)]
         
         # Choose noise parameters r, e1, e2
-        r = [os.urandom(1)[0] % 5 - 2 for _ in range(4)]
+        r = [os.urandom(1)[0] % 3 - 1 for _ in range(4)]
         e1 = [os.urandom(1)[0] % 3 - 1 for _ in range(4)]
-        e2 = os.urandom(1)[0] % 3 - 1
+        e2 = [os.urandom(1)[0] % 3 - 1 for _ in range(32)]
         
         # Compute u = A^T * r + e1 (mod q)
         u = []
@@ -64,10 +66,9 @@ class CrystalsKyberSim:
             val = sum(matrix_A[i][j] * r[i] for i in range(4)) + e1[j]
             u.append(val % q)
             
-        # Compute v = t^T * r + e2 + encode(m) (mod q)
-        # We simulate the message encoding by converting the first byte of msg_m to modular scale
-        encoded_m = int(msg_m[0]) * 13 # scaling factor
-        v = (sum(t[i] * r[i] for i in range(4)) + e2 + encoded_m) % q
+        # Compute v = t^T * r + e2 + m * round(q/2) (mod q)
+        v_base = sum(t[i] * r[i] for i in range(4))
+        v = [(v_base + e2[k] + msg_bits[k] * half_q) % q for k in range(32)]
         
         ciphertext = {
             "u": u,
@@ -75,9 +76,9 @@ class CrystalsKyberSim:
             "raw": binascii.hexlify(os.urandom(64)).decode()
         }
         
-        # Shared secret is SHA-256 of (msg_m + ciphertext)
+        # Shared secret is SHA-256 of (msg_bytes + ciphertext["raw"])
         hasher = hashlib.sha256()
-        hasher.update(msg_m)
+        hasher.update(msg_bytes)
         hasher.update(ciphertext["raw"].encode())
         shared_key = hasher.digest()
         
@@ -89,27 +90,31 @@ class CrystalsKyberSim:
         Decrypts the ciphertext using private key to reconstruct the shared key.
         """
         q = private_key["q"]
+        half_q = round(q / 2)
         secret_s = private_key["secret_s"]
         u = ciphertext["u"]
         v = ciphertext["v"]
         
-        # Reconstruct: v - s^T * u = (t^T * r + e2 + m) - s^T * (A^T * r + e1)
-        # Since t = A*s + e, this equals:
-        # (s^T * A^T * r + e^T * r + e2 + m) - (s^T * A^T * r + s^T * e1) ≈ m
-        temp = sum(secret_s[i] * u[i] for i in range(4))
-        decoded_val = (v - temp) % q
+        # Reconstruct shared lattice point: w = s^T * u (mod q)
+        w = sum(secret_s[i] * u[i] for i in range(4)) % q
         
-        # De-scale to find the original message byte (simulated)
-        # Note: in standard LWE, error corrections are performed here.
-        # We ensure a mathematically consistent decryption by deriving msg_m deterministically from decoded_val
-        # to ensure it always matches encapsulate.
-        # For simulation, we derive msg_m using a PRF keyed by the private key and the reconstructed value.
-        prng_seed = bytes([decoded_val % 256]) + private_key["raw"].encode()
-        msg_m = hashlib.sha256(prng_seed).digest()
-        
-        # Reconstruct the shared secret
+        # Decode 32 bits by evaluating distance to 0 vs half_q
+        dec_bits = []
+        for k in range(32):
+            diff = (v[k] - w) % q
+            dist_0 = min(diff, q - diff)
+            dist_1 = abs(diff - half_q)
+            dec_bits.append(1 if dist_1 < dist_0 else 0)
+            
+        # Reconstruct 4-byte message seed
+        rec_bytes = bytearray(4)
+        for i in range(32):
+            if dec_bits[i]:
+                rec_bytes[i // 8] |= (1 << (i % 8))
+                
+        # Derive exact matching shared key
         hasher = hashlib.sha256()
-        hasher.update(msg_m)
+        hasher.update(bytes(rec_bytes))
         hasher.update(ciphertext["raw"].encode())
         shared_key = hasher.digest()
         
